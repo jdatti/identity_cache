@@ -276,6 +276,10 @@ module IdentityCache
         IdentityCache.fetch(cache_key) { identity_cache_conditions(fields, values).limit(1).pluck(attribute).first }
       end
 
+      def after_action_name
+        @after_action_name ||= "expire_parent_cache_#{self.name.underscore.parameterize.underscore}"
+      end
+
       def add_parent_expiry_hook(options)
         child_class = options[:association_class]
         child_association = child_class.reflect_on_association(options[:inverse_name])
@@ -285,7 +289,7 @@ module IdentityCache
         child_class.send(:include, ArTransactionChanges) unless child_class.include?(ArTransactionChanges)
         child_class.send(:include, ParentModelExpiration) unless child_class.include?(ParentModelExpiration)
 
-        after_action_name = "expire_parent_cache_#{self.name.underscore}"
+        # after_action_name = "expire_parent_cache_#{self.name.underscore}"
 
         child_class.class_eval(<<-CODE, __FILE__, __LINE__ + 1)
         
