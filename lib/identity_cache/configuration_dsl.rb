@@ -277,7 +277,7 @@ module IdentityCache
       end
 
       def after_action_name
-        @after_action_name ||= "expire_parent_cache_#{self.name.underscore.parameterize.underscore}"
+        @after_action_name ||= "expire_parent_cache_#{self.name.underscore.gsub('/', '_')}"
       end
 
       def add_parent_expiry_hook(options)
